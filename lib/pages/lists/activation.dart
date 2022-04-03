@@ -52,6 +52,8 @@ class _ActivationPageState extends State<ActivationPage> {
   TextEditingController txtnAct2 = TextEditingController(text: "");
   TextEditingController txtnAct3 = TextEditingController(text: "");
   TextEditingController txtnAct4 = TextEditingController(text: "");
+  TextEditingController txtMac = TextEditingController(text: "");
+  TextEditingController txtDisque = TextEditingController(text: "");
   String numCD = "";
 
   @override
@@ -65,6 +67,8 @@ class _ActivationPageState extends State<ActivationPage> {
       txtNS2.text = "E2DY8I";
       txtNS3.text = "Y9A6Y6";
       txtNS4.text = "PTX3D";
+      txtDisque.text = "";
+      txtMac.text = "";
       txtnAct1.text = "";
       txtnAct2.text = "";
       txtnAct3.text = "";
@@ -123,11 +127,11 @@ class _ActivationPageState extends State<ActivationPage> {
         const NavigationBarWidget(),
         FittedBox(
             child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: Text("Votre N° de Série",
-              textAlign: TextAlign.center,
-              style: GoogleFonts.abel(fontSize: 40, color: Colors.amber)),
-        )),
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Text("Votre N° de Série",
+                    textAlign: TextAlign.center,
+                    style:
+                        GoogleFonts.abel(fontSize: 40, color: Colors.amber)))),
         const SizedBox(height: 30),
         Wrap(alignment: WrapAlignment.center, children: [
           MyTextField(index: 0, txtNS: txtNS1),
@@ -153,26 +157,43 @@ class _ActivationPageState extends State<ActivationPage> {
         const SizedBox(height: 30)
       ]));
 
-  Widget widgetResultat() => CenteredView(
-          child: ListView(shrinkWrap: true, children: [
-        FittedBox(
-            child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: Text("Votre N° d'Activation",
-              textAlign: TextAlign.center,
-              style: GoogleFonts.abel(fontSize: 40, color: Colors.tealAccent)),
-        )),
-        const SizedBox(height: 30),
-        Wrap(alignment: WrapAlignment.center, children: [
-          resultField(txtnAct1),
-          const SizedBox(width: 10),
-          resultField(txtnAct2),
-          const SizedBox(width: 10),
-          resultField(txtnAct3),
-          const SizedBox(width: 10),
-          resultField(txtnAct4)
-        ])
-      ]));
+  Widget widgetResultat() => ListView(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          children: [
+            const Divider(color: Colors.white, height: 3),
+            FittedBox(
+                child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: Text("Votre N° d'Activation",
+                        textAlign: TextAlign.center,
+                        style: GoogleFonts.abel(
+                            fontSize: 40, color: Colors.tealAccent)))),
+            const SizedBox(height: 30),
+            Wrap(alignment: WrapAlignment.center, children: [
+              resultField(txtnAct1),
+              const SizedBox(width: 10),
+              resultField(txtnAct2),
+              const SizedBox(width: 10),
+              resultField(txtnAct3),
+              const SizedBox(width: 10),
+              resultField(txtnAct4)
+            ]),
+            FittedBox(
+                child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    child: Text("Adresse Mac : " + mac,
+                        textAlign: TextAlign.center,
+                        style: GoogleFonts.abel(
+                            fontSize: 20, color: Colors.white)))),
+            FittedBox(
+                child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    child: Text("N° Logique du Disque : " + disque.toString(),
+                        textAlign: TextAlign.center,
+                        style: GoogleFonts.abel(
+                            fontSize: 20, color: Colors.white))))
+          ]);
 
   Widget btnVerifier() => Container(
       margin: EdgeInsets.symmetric(horizontal: Data.widthScreen / 20),
@@ -205,7 +226,7 @@ class _ActivationPageState extends State<ActivationPage> {
                       fontSize: 24)))));
 
   Widget resultField(TextEditingController txtNS) => ConstrainedBox(
-      constraints: const BoxConstraints(maxWidth: 180),
+      constraints: const BoxConstraints(maxWidth: 170),
       child: TextField(
           cursorColor: Colors.black,
           controller: txtNS,
@@ -330,6 +351,7 @@ class _ActivationPageState extends State<ActivationPage> {
             int pMac = decrypterSystem36(vlch);
             mac = decrypterMAC(pMac);
             print("mac = $mac");
+            txtMac.text = mac;
 
             vlch =
                 ns2.substring(1, 2) + ns1.substring(2, 3) + ns4.substring(3, 4);
@@ -347,6 +369,7 @@ class _ActivationPageState extends State<ActivationPage> {
             }
             disque = decrypterSystem36(vlch);
             print("Disque = $disque");
+            txtDisque.text = disque.toString();
 
             String numProduit = pSeq.substring(0, 2);
             print("numProduit = $numProduit");
