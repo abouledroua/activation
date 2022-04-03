@@ -7,17 +7,15 @@ class Data {
   static String localIP = "";
   static String internetIP = "";
   static int networkMode = 1;
-  static String www = "ACTIVATION/WWW/";
+  static String www = "ACTIVATION/WWW";
   static late double heightScreen;
   static late double heightmyAppBar;
   static int timeOut = 0;
   static double minTablet = 450;
   static late BuildContext myContext;
   static double widthScreen = double.infinity;
-  static bool _loadingEnfant = false,
-      canPop = false,
+  static bool canPop = false,
       loadingAdmin = false,
-      _errorEnfant = false,
       errorAdmin = false,
       isLandscape = false,
       isPortrait = false,

@@ -10,8 +10,6 @@ class MenuWidget extends StatefulWidget {
 class _MenuWidgetState extends State<MenuWidget> {
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [],
-    );
+    return Container();
   }
 }
