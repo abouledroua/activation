@@ -23,7 +23,7 @@ class ActivationPage extends StatefulWidget {
 
 bool working = false, genererActivation = false;
 List<String> ns = ['', '', '', ''];
-FocusNode n1 = FocusNode(),
+late FocusNode n1 = FocusNode(),
     n2 = FocusNode(),
     n3 = FocusNode(),
     nVerifier = FocusNode(),
@@ -42,18 +42,23 @@ late String ns1,
     nAct1;
 late SharedPreferences prefs;
 late int disque, idVersion, annee, active, idCD;
+late Client? myClient;
 
 class _ActivationPageState extends State<ActivationPage> {
-  TextEditingController txtNS1 = TextEditingController(text: "");
-  TextEditingController txtNS2 = TextEditingController(text: "");
-  TextEditingController txtNS3 = TextEditingController(text: "");
-  TextEditingController txtNS4 = TextEditingController(text: "");
-  TextEditingController txtnAct1 = TextEditingController(text: "");
-  TextEditingController txtnAct2 = TextEditingController(text: "");
-  TextEditingController txtnAct3 = TextEditingController(text: "");
-  TextEditingController txtnAct4 = TextEditingController(text: "");
-  TextEditingController txtMac = TextEditingController(text: "");
-  TextEditingController txtDisque = TextEditingController(text: "");
+  late TextEditingController txtNS1,
+      txtNS2,
+      txtNS3,
+      txtNS4,
+      txtnAct1,
+      txtnAct2,
+      txtnAct3,
+      txtnAct4,
+      txtMac,
+      txtDisque,
+      txtActitiveClient,
+      txtAdressClient,
+      txtPhoneClient,
+      txtNameClient;
   String numCD = "";
 
   @override
@@ -61,24 +66,52 @@ class _ActivationPageState extends State<ActivationPage> {
     print("init activation");
     getSharedPrefs();
     WidgetsFlutterBinding.ensureInitialized(); //all widgets are rendered here
-    if (Data.production) {
-      numCD = "";
-      txtNS1.text = "15V02a";
-      txtNS2.text = "E2DY8I";
-      txtNS3.text = "Y9A6Y6";
-      txtNS4.text = "PTX3D";
-      txtDisque.text = "";
-      txtMac.text = "";
-      txtnAct1.text = "";
-      txtnAct2.text = "";
-      txtnAct3.text = "";
-      txtnAct4.text = "";
-      ns[0] = txtNS1.text;
-      ns[1] = txtNS2.text;
-      ns[2] = txtNS3.text;
-      ns[3] = txtNS4.text;
-    }
+    // if (Data.production) {
+    numCD = "";
+    txtNS1 = TextEditingController(text: "15V02a");
+    txtNS2 = TextEditingController(text: "E2DY8I");
+    txtNS3 = TextEditingController(text: "Y9A6Y6");
+    txtNS4 = TextEditingController(text: "PTX3D");
+    txtDisque = TextEditingController(text: "");
+    txtMac = TextEditingController(text: "");
+    txtActitiveClient = TextEditingController(text: "");
+    txtAdressClient = TextEditingController(text: "");
+    txtNameClient = TextEditingController(text: "");
+    txtPhoneClient = TextEditingController(text: "");
+    txtnAct1 = TextEditingController(text: "");
+    txtnAct2 = TextEditingController(text: "");
+    txtnAct3 = TextEditingController(text: "");
+    txtnAct4 = TextEditingController(text: "");
+    ns[0] = txtNS1.text;
+    ns[1] = txtNS2.text;
+    ns[2] = txtNS3.text;
+    ns[3] = txtNS4.text;
+    //   }
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    n1.dispose();
+    n2.dispose();
+    n3.dispose();
+    n4.dispose();
+    nVerifier.dispose();
+    txtNS1.dispose();
+    txtNS2.dispose();
+    txtNS3.dispose();
+    txtNS4.dispose();
+    txtDisque.dispose();
+    txtMac.dispose();
+    txtNameClient.dispose();
+    txtActitiveClient.dispose();
+    txtAdressClient.dispose();
+    txtPhoneClient.dispose();
+    txtnAct1.dispose();
+    txtnAct2.dispose();
+    txtnAct3.dispose();
+    txtnAct4.dispose();
+    super.dispose();
   }
 
   getSharedPrefs() async {
@@ -122,7 +155,7 @@ class _ActivationPageState extends State<ActivationPage> {
                     body: myBodyWidget()))));
   }
 
-  Widget myBodyWidget() => CenteredView(
+  CenteredView myBodyWidget() => CenteredView(
           child: ListView(shrinkWrap: true, children: [
         const NavigationBarWidget(),
         FittedBox(
@@ -154,21 +187,15 @@ class _ActivationPageState extends State<ActivationPage> {
             : genererActivation
                 ? widgetResultat()
                 : btnVerifier(),
-        const SizedBox(height: 30)
+        const SizedBox(height: 10)
       ]));
 
-  Widget widgetResultat() => ListView(
+  ListView widgetResultat() => ListView(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           children: [
             const Divider(color: Colors.white, height: 3),
-            FittedBox(
-                child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: Text("Votre N° d'Activation",
-                        textAlign: TextAlign.center,
-                        style: GoogleFonts.abel(
-                            fontSize: 40, color: Colors.tealAccent)))),
+            titleResult("Votre N° d'Activation"),
             const SizedBox(height: 30),
             Wrap(alignment: WrapAlignment.center, children: [
               resultField(txtnAct1),
@@ -179,23 +206,36 @@ class _ActivationPageState extends State<ActivationPage> {
               const SizedBox(width: 10),
               resultField(txtnAct4)
             ]),
-            FittedBox(
-                child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    child: Text("Adresse Mac : " + mac,
-                        textAlign: TextAlign.center,
-                        style: GoogleFonts.abel(
-                            fontSize: 20, color: Colors.white)))),
-            FittedBox(
-                child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    child: Text("N° Logique du Disque : " + disque.toString(),
-                        textAlign: TextAlign.center,
-                        style: GoogleFonts.abel(
-                            fontSize: 20, color: Colors.white))))
+            const Divider(color: Colors.white, height: 3),
+            titleResult("Info Matériel"),
+            infoResult("Adresse Mac : " + mac),
+            infoResult("N° Logique du Disque : " + disque.toString()),
+            const SizedBox(height: 10),
+            const Divider(color: Colors.white, height: 3),
+            titleResult("Info Client"),
+            infoResult("Nom : " + myClient!.name),
+            infoResult("Adresse : " + myClient!.adress),
+            infoResult("Activité : " + myClient!.activite),
+            infoResult("Téléphone : " + myClient!.phone)
           ]);
 
-  Widget btnVerifier() => Container(
+  FittedBox infoResult(String msg) => FittedBox(
+      alignment: Alignment.centerLeft,
+      child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+          child: Text(msg,
+              textAlign: TextAlign.center,
+              style: GoogleFonts.abel(fontSize: 20, color: Colors.white))));
+
+  FittedBox titleResult(String msg) => FittedBox(
+      child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          child: Text(msg,
+              textAlign: TextAlign.center,
+              style:
+                  GoogleFonts.abel(fontSize: 40, color: Colors.tealAccent))));
+
+  Container btnVerifier() => Container(
       margin: EdgeInsets.symmetric(horizontal: Data.widthScreen / 20),
       alignment: Alignment.center,
       child: ConstrainedBox(
@@ -225,7 +265,7 @@ class _ActivationPageState extends State<ActivationPage> {
                       letterSpacing: 3,
                       fontSize: 24)))));
 
-  Widget resultField(TextEditingController txtNS) => ConstrainedBox(
+  ConstrainedBox resultField(TextEditingController txtNS) => ConstrainedBox(
       constraints: const BoxConstraints(maxWidth: 170),
       child: TextField(
           cursorColor: Colors.black,
@@ -321,14 +361,6 @@ class _ActivationPageState extends State<ActivationPage> {
           } else {
             print("Its Ok ----- Connected ----------------");
             print("ID_CD = $idCD");
-            AwesomeDialog(
-                    width: min(Data.widthScreen, 400),
-                    context: context,
-                    dialogType: DialogType.SUCCES,
-                    showCloseIcon: true,
-                    title: 'Erreur',
-                    desc: 'Sequence valide !!!')
-                .show();
             String vlch = ns3.substring(0, 1) +
                 ns2.substring(5, 6) +
                 ns1.substring(0, 1) +
@@ -444,11 +476,20 @@ class _ActivationPageState extends State<ActivationPage> {
             prix = double.parse(m['PRIX']);
           }
           if (active == 0) {
-            genererNumActivation();
-            setState(() {
-              working = false;
-              genererActivation = true;
-            });
+            myClient = await openClientDialog();
+            if (myClient != null) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text("Sequence valide !!!")));
+              genererNumActivation();
+              setState(() {
+                working = false;
+                genererActivation = true;
+              });
+            } else {
+              setState(() {
+                working = false;
+              });
+            }
           } else {
             setState(() {
               working = false;
@@ -501,6 +542,76 @@ class _ActivationPageState extends State<ActivationPage> {
                   'Adresse de serveur introuvable \n Configuer les paramêtres !!!')
           .show();
     }
+  }
+
+  Future<Client?> openClientDialog() => showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+              title: const Text("Info Client",
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 26,
+                      decoration: TextDecoration.underline)),
+              content: Column(mainAxisSize: MainAxisSize.min, children: [
+                TextField(
+                    maxLines: 1,
+                    keyboardType: TextInputType.name,
+                    onSubmitted: (_) => btnOk,
+                    controller: txtNameClient,
+                    autofocus: true,
+                    decoration:
+                        const InputDecoration(hintText: 'Nom du client')),
+                TextField(
+                    keyboardType: TextInputType.text,
+                    maxLines: null,
+                    onSubmitted: (_) => btnOk,
+                    controller: txtAdressClient,
+                    autofocus: true,
+                    decoration:
+                        const InputDecoration(hintText: 'Adresse du client')),
+                TextField(
+                    keyboardType: TextInputType.text,
+                    maxLines: null,
+                    onSubmitted: (_) => btnOk,
+                    controller: txtActitiveClient,
+                    autofocus: true,
+                    decoration:
+                        const InputDecoration(hintText: 'Acitivité du client')),
+                TextField(
+                    maxLines: 1,
+                    keyboardType: TextInputType.phone,
+                    onSubmitted: (_) => btnOk,
+                    controller: txtPhoneClient,
+                    autofocus: true,
+                    decoration: const InputDecoration(
+                        hintText: 'N° de Télephone du client')),
+              ]),
+              actions: [
+                TextButton(onPressed: btnOk, child: const Text("Ok")),
+                TextButton(
+                    onPressed: btnCancel,
+                    child: const Text("Annuler",
+                        style: TextStyle(color: Colors.red)))
+              ]));
+
+  btnOk() {
+    if (txtNameClient.text.isNotEmpty) {
+      Client c = Client(
+          name: txtNameClient.text,
+          adress: txtAdressClient.text,
+          activite: txtActitiveClient.text,
+          phone: txtPhoneClient.text);
+      Navigator.of(context).pop(c);
+
+      txtAdressClient.clear();
+      txtNameClient.clear();
+      txtPhoneClient.clear();
+    }
+  }
+
+  btnCancel() {
+    Navigator.of(context).pop(null);
   }
 
   String system36New(int pnum) {
@@ -930,4 +1041,13 @@ class _MyTextFieldState extends State<MyTextField> {
                 fillColor: Colors.grey.shade300,
                 filled: true)));
   }
+}
+
+class Client {
+  String name, adress, activite, phone;
+  Client(
+      {required this.name,
+      required this.activite,
+      required this.adress,
+      required this.phone});
 }

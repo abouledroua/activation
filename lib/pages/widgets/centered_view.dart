@@ -10,6 +10,6 @@ class CenteredView extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 30),
         alignment: Alignment.topCenter,
         child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 1200), child: child));
+            constraints: const BoxConstraints(maxWidth: 800), child: child));
   }
 }
