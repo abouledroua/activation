@@ -55,6 +55,7 @@ class _ActivationPageState extends State<ActivationPage> {
       txtnAct4,
       txtMac,
       txtDisque,
+      txtPrix,
       txtActitiveClient,
       txtAdressClient,
       txtPhoneClient,
@@ -78,6 +79,7 @@ class _ActivationPageState extends State<ActivationPage> {
     txtAdressClient = TextEditingController(text: "");
     txtNameClient = TextEditingController(text: "");
     txtPhoneClient = TextEditingController(text: "");
+    txtPrix = TextEditingController(text: "");
     txtnAct1 = TextEditingController(text: "");
     txtnAct2 = TextEditingController(text: "");
     txtnAct3 = TextEditingController(text: "");
@@ -97,6 +99,7 @@ class _ActivationPageState extends State<ActivationPage> {
     n3.dispose();
     n4.dispose();
     nVerifier.dispose();
+    txtPrix.dispose();
     txtNS1.dispose();
     txtNS2.dispose();
     txtNS3.dispose();
@@ -216,7 +219,67 @@ class _ActivationPageState extends State<ActivationPage> {
             infoResult("Nom : " + myClient!.name),
             infoResult("Adresse : " + myClient!.adress),
             infoResult("Activité : " + myClient!.activite),
-            infoResult("Téléphone : " + myClient!.phone)
+            infoResult("Téléphone : " + myClient!.phone),
+            const SizedBox(height: 10),
+            const Divider(color: Colors.white, height: 3),
+            titleResult("Montant de la licence"),
+            infoResult(myClient!.prix.toString() + " DA"),
+            const SizedBox(height: 10),
+            Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
+              ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 200),
+                  child: ElevatedButton(
+                      onPressed: btnOk,
+                      style: ButtonStyle(backgroundColor:
+                          MaterialStateProperty.resolveWith<Color>(
+                              (Set<MaterialState> states) {
+                        if (states.contains(MaterialState.pressed)) {
+                          return const Color.fromARGB(255, 88, 179, 76);
+                        } else if (states.contains(MaterialState.disabled)) {
+                          return Colors.grey;
+                        }
+                        return Colors.green;
+                      }), minimumSize: MaterialStateProperty.resolveWith<Size>(
+                          (Set<MaterialState> states) {
+                        return const Size.fromHeight(72);
+                      }), textStyle:
+                          MaterialStateProperty.resolveWith<TextStyle>(
+                              (Set<MaterialState> states) {
+                        return const TextStyle(
+                            fontSize: 24, color: Colors.white);
+                      })),
+                      child: const Text("Activer",
+                          style: TextStyle(color: Colors.white)))),
+              ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 200),
+                  child: ElevatedButton(
+                      onPressed: () {
+                        setState(() {
+                          working = false;
+                          genererActivation = false;
+                        });
+                      },
+                      style: ButtonStyle(backgroundColor:
+                          MaterialStateProperty.resolveWith<Color>(
+                              (Set<MaterialState> states) {
+                        if (states.contains(MaterialState.pressed)) {
+                          return const Color.fromARGB(255, 179, 76, 76);
+                        } else if (states.contains(MaterialState.disabled)) {
+                          return Colors.red;
+                        }
+                        return Colors.red;
+                      }), minimumSize: MaterialStateProperty.resolveWith<Size>(
+                          (Set<MaterialState> states) {
+                        return const Size.fromHeight(72);
+                      }), textStyle:
+                          MaterialStateProperty.resolveWith<TextStyle>(
+                              (Set<MaterialState> states) {
+                        return const TextStyle(
+                            fontSize: 24, color: Colors.white);
+                      })),
+                      child: const Text("Annuler",
+                          style: TextStyle(color: Colors.white))))
+            ])
           ]);
 
   FittedBox infoResult(String msg) => FittedBox(
@@ -548,12 +611,8 @@ class _ActivationPageState extends State<ActivationPage> {
       context: context,
       barrierDismissible: false,
       builder: (context) => AlertDialog(
-              title: const Text("Info Client",
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 26,
-                      decoration: TextDecoration.underline)),
               content: Column(mainAxisSize: MainAxisSize.min, children: [
+                titleDialog("Info Client"),
                 TextField(
                     maxLines: 1,
                     keyboardType: TextInputType.name,
@@ -586,6 +645,16 @@ class _ActivationPageState extends State<ActivationPage> {
                     autofocus: true,
                     decoration: const InputDecoration(
                         hintText: 'N° de Télephone du client')),
+                const SizedBox(height: 20),
+                titleDialog("Prix"),
+                TextField(
+                    maxLines: 1,
+                    keyboardType: TextInputType.number,
+                    onSubmitted: (_) => btnOk,
+                    controller: txtPrix,
+                    autofocus: true,
+                    decoration:
+                        const InputDecoration(hintText: 'Prix de la licence')),
               ]),
               actions: [
                 TextButton(onPressed: btnOk, child: const Text("Ok")),
@@ -595,9 +664,25 @@ class _ActivationPageState extends State<ActivationPage> {
                         style: TextStyle(color: Colors.red)))
               ]));
 
+  Container titleDialog(String msg) => Container(
+      padding: const EdgeInsets.all(8),
+      color: Colors.blueAccent,
+      child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+        Text(msg,
+            style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 26,
+                decoration: TextDecoration.underline))
+      ]));
+
   btnOk() {
     if (txtNameClient.text.isNotEmpty) {
+      int prix = 0;
+      if (txtPrix.text.isNotEmpty) {
+        int.parse('txtPrix.text');
+      }
       Client c = Client(
+          prix: prix,
           name: txtNameClient.text,
           adress: txtAdressClient.text,
           activite: txtActitiveClient.text,
@@ -964,6 +1049,52 @@ class _ActivationPageState extends State<ActivationPage> {
         return 0;
     }
   }
+
+  /* insertActivation() async {
+    String serverDir = Data.getServerDirectory();
+    var url = "$serverDir/INSERT_CLASSE.php";
+    print(url);
+    Uri myUri = Uri.parse(url);
+    http
+        .post(myUri, body: {
+          "ID_ENFANT": idEnfant.toString(),
+          "ID_GROUPE": idGroupe.toString()
+        })
+        .timeout(Duration(seconds: Data.timeOut))
+        .then((response) async {
+          if (response.statusCode == 200) {
+            var responsebody = jsonDecode(response.body);
+            int result = int.parse(responsebody);
+            if (result == 0) {
+              AwesomeDialog(
+                      context: context,
+                      dialogType: DialogType.ERROR,
+                      showCloseIcon: true,
+                      title: 'Erreur',
+                      desc: "Probleme lors de l'ajout !!!")
+                  .show();
+            }
+          } else {
+            AwesomeDialog(
+                    context: context,
+                    dialogType: DialogType.ERROR,
+                    showCloseIcon: true,
+                    title: 'Erreur',
+                    desc: 'Probleme de Connexion avec le serveur !!!')
+                .show();
+          }
+        })
+        .catchError((error) {
+          print("erreur : $error");
+          AwesomeDialog(
+                  context: context,
+                  dialogType: DialogType.ERROR,
+                  showCloseIcon: true,
+                  title: 'Erreur',
+                  desc: 'Probleme de Connexion avec le serveur !!!')
+              .show();
+        });
+  }*/
 }
 
 class MyTextField extends StatefulWidget {
@@ -1044,10 +1175,12 @@ class _MyTextFieldState extends State<MyTextField> {
 }
 
 class Client {
+  int prix;
   String name, adress, activite, phone;
   Client(
       {required this.name,
       required this.activite,
+      required this.prix,
       required this.adress,
       required this.phone});
 }
